@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>F80 Berlin | The Infinite Standard</title>
+    
+    <!-- FRAMEWORKS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700;900&family=Manrope:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            light: '#F3E5AB',
+                            DEFAULT: '#C5A059', 
+                            dark: '#8C6F3D',
+                        },
+                        onyx: '#050505',
+                        charcoal: '#0F0F0F',
+                        border: 'rgba(255, 255, 255, 0.08)'
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        playfair: ['Playfair Display', 'serif'],
+                        sans: ['Manrope', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'noise': "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.04%22/%3E%3C/svg%3E')",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* === CORE === */
+        html, body { overflow-x: hidden; width: 100%; background-color: #050505; color: white; }
+        
+        /* === MAGIC INTRO === */
+        .curtain {
+            position: fixed; top: 0; bottom: 0; width: 50%; background: #000; z-index: 9999;
+            transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+            border-right: 1px solid rgba(197, 160, 89, 0.1);
+        }
+        #curtain-left { left: 0; border-right: 1px solid rgba(197, 160, 89, 0.2); }
+        #curtain-right { right: 0; border-left: 1px solid rgba(197, 160, 89, 0.2); }
+        
+        .intro-content {
+            position: fixed; inset: 0; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease; pointer-events: none;
+        }
+
+        .magic-open #curtain-left { transform: translateX(-100%); }
+        .magic-open #curtain-right { transform: translateX(100%); }
+        .magic-open .intro-content { opacity: 0; }
+
+        /* === GOLD SHINE === */
+        .gold-shine {
+            background: linear-gradient(72deg, #8C6F3D 0%, #D4AF37 22%, #F3E5AB 50%, #D4AF37 78%, #8C6F3D 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 200% auto; animation: shine 4s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        /* === ANIMATIONS === */
+        .reveal { opacity: 0; transform: translateY(60px); transition: all 1s cubic-bezier(0.2, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        .hover-img-zoom { overflow: hidden; }
+        .hover-img-zoom img { transition: transform 1.5s ease; filter: grayscale(100%); }
+        .hover-img-zoom:hover img { transform: scale(1.05); filter: grayscale(0%); }
+
+        /* === MOBILE MENU === */
+        #mobile-menu { transform: translateX(100%); transition: transform 0.6s cubic-bezier(0.7, 0, 0.2, 1); }
+        #mobile-menu.open { transform: translateX(0); }
+        
+        /* === MAP BLUR === */
+        .map-blur { filter: blur(10px); transition: filter 0.5s; }
+        .map-wrapper:hover .map-blur { filter: blur(5px); }
+
+        /* === LANGUAGE TRANSITION === */
+        .lang-target { transition: opacity 0.2s ease-in-out; }
+    </style>
+</head>
+<body class="antialiased bg-noise">
+
+    <!-- === 1. MAGIC INTRO LAYERS === -->
+    <div id="curtain-left" class="curtain"></div>
+    <div id="curtain-right" class="curtain"></div>
+    <div class="intro-content">
+        <i class="fas fa-tooth text-6xl md:text-9xl text-gold mb-8 animate-pulse"></i>
+        <h1 class="text-white text-3xl md:text-5xl font-serif font-black tracking-[0.5em] uppercase">F80 Berlin</h1>
+    </div>
+
+    <!-- === 2. NAVIGATION === -->
+    <div class="fixed top-0 w-full z-[500]">
+        <div class="bg-gold text-black py-2 px-4 text-[9px] font-black uppercase tracking-widest flex justify-between items-center">
+            <span class="truncate lang-target" data-de="F80 — Zahn- & Gesichtsspezialisten" data-en="F80 — Dental & Facial Specialists">F80 — Dental & Facial Specialists</span>
+            <div class="flex gap-4 items-center">
+                <a href="https://www.instagram.com/f80.berlin/?hl=en" target="_blank" class="mr-4 hover:text-white transition text-sm"><i class="fab fa-instagram"></i></a>
+                <button id="btn-de" onclick="setLanguage('de')" class="hover:text-white font-black opacity-50 transition">DE</button>
+                <button id="btn-en" onclick="setLanguage('en')" class="font-black underline transition">EN</button>
+            </div>
+        </div>
+        <nav class="bg-black/90 backdrop-blur-xl border-b border-border py-6 px-6 md:px-12 flex justify-between items-center">
+            <a href="#" class="text-3xl md:text-5xl font-serif font-black tracking-tighter uppercase text-white">F80<span class="text-gold">.</span></a>
+            <div class="hidden xl:flex gap-12 text-[11px] font-bold uppercase tracking-[0.3em] text-gray-400">
+                <a href="#atmosphere" class="hover:text-gold transition lang-target" data-de="Atmosphäre" data-en="Atmosphere">Atmosphere</a>
+                <a href="#services" class="hover:text-gold transition lang-target" data-de="Behandlungen" data-en="Treatments">Treatments</a>
+                <a href="#team" class="hover:text-gold transition lang-target" data-de="Spezialisten" data-en="Specialists">Specialists</a>
+                <a href="#footer" class="hover:text-gold transition lang-target" data-de="Kontakt" data-en="Contact">Contact</a>
+            </div>
+            <button onclick="toggleMenu()" class="xl:hidden text-gold text-2xl z-50"><i id="menu-icon" class="fas fa-bars"></i></button>
+        </nav>
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black z-[400] flex flex-col justify-center items-center gap-12">
+        <a href="#atmosphere" onclick="toggleMenu()" class="text-3xl font-serif text-white uppercase hover:text-gold lang-target" data-de="Atmosphäre" data-en="Atmosphere">Atmosphere</a>
+        <a href="#services" onclick="toggleMenu()" class="text-3xl font-serif text-white uppercase hover:text-gold lang-target" data-de="Behandlungen" data-en="Treatments">Treatments</a>
+        <a href="#team" onclick="toggleMenu()" class="text-3xl font-serif text-white uppercase hover:text-gold lang-target" data-de="Spezialisten" data-en="Specialists">Specialists</a>
+        <a href="#footer" onclick="toggleMenu()" class="text-3xl font-serif text-white uppercase hover:text-gold lang-target" data-de="Anfahrt" data-en="Directions">Directions</a>
+        <a href="https://www.instagram.com/f80.berlin/?hl=en" target="_blank" class="text-gold text-2xl mt-4"><i class="fab fa-instagram"></i></a>
+    </div>
+
+    <!-- === 3. HERO === -->
+    <header class="relative min-h-[100vh] flex items-center justify-center pt-20 overflow-hidden">
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2500" class="w-full h-full object-cover opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-b from-onyx via-transparent to-onyx"></div>
+        </div>
+        <div class="relative z-10 text-center px-4 max-w-7xl mx-auto">
+            <h4 class="text-gold font-serif italic text-xl mb-8 tracking-[0.3em] reveal lang-target" data-de="F80 Zahnarztpraxis Berlin Mitte" data-en="F80 Dental Practice Berlin Mitte">F80 Dental Practice Berlin Mitte</h4>
+            <h1 class="text-5xl md:text-[7vw] font-serif leading-[0.9] tracking-tighter mb-12 reveal uppercase">
+                <span class="lang-target" data-de="Ein neuer" data-en="The New Way">The New Way</span> <br> 
+                <span class="gold-shine italic lang-target" data-de="Standard." data-en="Of Dentistry.">Of Dentistry.</span>
+            </h1>
+            <div class="reveal">
+                <a href="https://www.doctolib.de" class="bg-gold text-black px-12 py-5 text-xs font-black uppercase tracking-[0.2em] hover:bg-white transition lang-target" data-de="Termin vereinbaren" data-en="Make An Appointment">Make An Appointment</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- === 4. ATMOSPHERE GALLERY === -->
+    <section id="atmosphere" class="py-32 bg-onyx border-t border-border">
+        <div class="max-w-[1900px] mx-auto px-6 md:px-12">
+            <div class="text-center mb-32 reveal">
+                <h2 class="text-4xl md:text-7xl font-serif tracking-tighter uppercase mb-6 lang-target" data-de="Die F80 Atmosphäre" data-en="The Atmosphere">The Atmosphere</h2>
+                <p class="text-gray-500 uppercase tracking-[0.4em] text-xs lang-target" data-de="Architektur • Technologie • Exzellenz" data-en="Architecture • Technology • Excellence">Architecture • Technology • Excellence</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24">
+                <script>
+                    const gallery = [
+                        {t: "Reception", d: "A calming sanctuary.", i: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=800"},
+                        {t: "Treatment Suite", d: "Minimalist design meets maximum comfort.", i: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800"},
+                        {t: "Microscopic Lab", d: "High-precision Zeiss microscopes.", i: "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=800"},
+                        {t: "Sterilization", d: "Hospital-grade hygiene standards.", i: "https://images.unsplash.com/photo-1516054575922-f0b8eeadec1a?q=80&w=800"},
+                        {t: "Ceramic Studio", d: "In-house master technicians.", i: "https://images.unsplash.com/photo-1588776814546-1b9885c53a63?q=80&w=800"},
+                        {t: "3D Diagnostics", d: "Low-radiation DVT scanning.", i: "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?q=80&w=800"},
+                        {t: "Patient Lounge", d: "Refresh yourself with artisanal water.", i: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800"},
+                        {t: "Surgical Theater", d: "Dedicated sterile environment.", i: "https://images.unsplash.com/photo-1504813184591-01572f98c85f?q=80&w=800"},
+                        {t: "Whitening Spa", d: "Relaxed setting for ZOOM! treatments.", i: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?q=80&w=800"},
+                        {t: "Prophylaxis", d: "Guided Biofilm Therapy (GBT).", i: "https://images.unsplash.com/photo-1571772996211-2f0b981a8a81?q=80&w=800"},
+                        {t: "Consultation", d: "Conversation at eye level.", i: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800"},
+                        {t: "Digital Scanning", d: "3Shape scanners for instant models.", i: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=800"},
+                        {t: "Recovery Room", d: "Private space to recover in peace.", i: "https://images.unsplash.com/photo-1631217868269-df46c637311d?q=80&w=800"},
+                        {t: "Art & Design", d: "Curated artworks rotate seasonally.", i: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800"},
+                        {t: "The View", d: "Overlooking Friedrichstraße.", i: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=800"}
+                    ];
+
+                    gallery.forEach(g => {
+                        document.write(`
+                            <div class="reveal group">
+                                <div class="hover-img-zoom aspect-[4/3] mb-8 bg-charcoal border border-border">
+                                    <img src="${g.i}" class="w-full h-full object-cover">
+                                </div>
+                                <h3 class="text-2xl font-serif text-white mb-4 group-hover:text-gold transition">${g.t}</h3>
+                                <p class="text-gray-500 text-sm leading-relaxed">${g.d}</p>
+                            </div>
+                        `);
+                    });
+                </script>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 5. THE 18 SERVICES === -->
+    <section id="services" class="py-32 bg-black border-t border-border">
+        <div class="max-w-[1900px] mx-auto px-6 md:px-12">
+            <h2 class="text-5xl md:text-8xl font-serif tracking-tighter uppercase mb-32 text-center reveal lang-target" data-de="Behandlungen" data-en="Treatment Menu">Treatment Menu</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1px] bg-border border border-border">
+                <script>
+                    const services = [
+                        { t: "Signature Examination", d: "Comprehensive analysis." },
+                        { t: "Professional Prophylaxis", d: "GBT Swiss-Protocol cleaning." },
+                        { t: "Anxiety Patient Care", d: "Laughing gas & gentle sedation." },
+                        { t: "Bleaching & Whitening", d: "Up to 11 shades brighter." },
+                        { t: "Invisalign® Aligners", d: "Invisible tooth correction." },
+                        { t: "Ceramic Veneers", d: "Hand-crafted aesthetic shells." },
+                        { t: "Dental Implants", d: "Titanium & Ceramic roots." },
+                        { t: "Root Canal Treatment", d: "Microscopic endodontics." },
+                        { t: "Periodontitis Therapy", d: "Laser-assisted gum health." },
+                        { t: "3D Diagnostics (DVT)", d: "Low-radiation X-Ray scanning." },
+                        { t: "Smile Design (DSD)", d: "Digital aesthetic planning." },
+                        { t: "Wisdom Teeth Removal", d: "Minimally invasive surgery." },
+                        { t: "CMD / Jaw Pain", d: "Function analysis & splints." },
+                        { t: "Children's Dentistry", d: "Playful early prevention." },
+                        { t: "Sports Dentistry", d: "Performance mouthguards." },
+                        { t: "Halitosis Clinic", d: "Fresh breath specialized care." },
+                        { t: "Full Mouth Rehab", d: "Complete bite reconstruction." },
+                        { t: "Second Opinion", d: "Unbiased expert validation." }
+                    ];
+
+                    services.forEach((s, i) => {
+                        const bg = i % 2 === 0 ? 'bg-onyx' : 'bg-[#0a0a0a]';
+                        document.write(`
+                            <div class="${bg} p-12 md:p-16 hover:bg-[#151515] transition duration-500 reveal group relative overflow-hidden">
+                                <div class="absolute top-6 right-6 text-border text-4xl font-serif opacity-20 group-hover:opacity-10 transition">${i+1 < 10 ? '0'+(i+1) : i+1}</div>
+                                <h3 class="text-2xl font-serif text-white mb-6 group-hover:text-gold transition">${s.t}</h3>
+                                <p class="text-gray-500 text-sm leading-7 mb-10 h-12">${s.d}</p>
+                                <button onclick="whatsappInquiry('${s.t}')" class="text-gold font-bold uppercase text-[10px] tracking-[0.3em] border-b border-gold/30 pb-2 hover:border-gold hover:text-white transition flex items-center gap-2">
+                                    <i class="fab fa-whatsapp text-lg"></i> WhatsApp
+                                </button>
+                            </div>
+                        `);
+                    });
+                </script>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 6. THE TEAM === -->
+    <section id="team" class="py-32 bg-onyx">
+        <div class="max-w-[1900px] mx-auto px-6 md:px-12">
+            <h2 class="text-5xl md:text-8xl font-serif tracking-tighter uppercase mb-40 text-center reveal lang-target" data-de="Die Spezialisten" data-en="The Specialists">The Specialists</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-24">
+                <script>
+                    const team = [
+                        {n: "Dr. Svetla Alpermann", r: "Head of Aesthetics", i: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=600"},
+                        {n: "Dr. Matthias Leyh", r: "Oral Surgeon", i: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=600"},
+                        {n: "Scarlett Bath", r: "Restorative Dentist", i: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=600"},
+                        {n: "Dr. Markus Tzschoppe", r: "Implantologist", i: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=600"},
+                        {n: "Ly Cao", r: "Endodontist", i: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=600"},
+                        {n: "Dr. Stefanie Schönmuth", r: "Prosthodontist", i: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600"},
+                        {n: "Dr. Alexander Weber", r: "Orthodontist", i: "https://images.unsplash.com/photo-1622902046580-2b47f47f5471?q=80&w=600"},
+                        {n: "Dr. Sarah Klein", r: "Pediatric Dentist", i: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600"},
+                        {n: "Johannes Meyer", r: "Master Technician", i: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=600"},
+                        {n: "Dr. Elena Rossi", r: "Anesthesiologist", i: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?q=80&w=600"},
+                    ];
+                    team.forEach(t => {
+                        document.write(`
+                            <div class="reveal group cursor-pointer">
+                                <div class="hover-img-zoom aspect-[3/4] mb-8 bg-charcoal border border-white/5 relative">
+                                    <div class="absolute inset-0 bg-gold/10 opacity-0 group-hover:opacity-20 transition z-10"></div>
+                                    <img src="${t.i}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700">
+                                </div>
+                                <h3 class="text-2xl font-serif text-white group-hover:text-gold transition">${t.n}</h3>
+                                <p class="text-gold text-[10px] uppercase tracking-[0.3em] mt-3 font-bold">${t.r}</p>
+                            </div>
+                        `);
+                    });
+                </script>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 7. HUGE INFO SECTION === -->
+    <section id="footer" class="bg-charcoal border-t border-border pt-32">
+        <div class="max-w-[1900px] mx-auto px-6 md:px-12">
+            
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-0 border border-border">
+                
+                <!-- COL 1: BOOKING & HOURS -->
+                <div class="p-12 md:p-20 border-b xl:border-b-0 xl:border-r border-border reveal">
+                    <h3 class="text-3xl md:text-5xl font-serif text-white mb-12 lang-target" data-de="Termin vereinbaren" data-en="Make an appointment">Make an appointment</h3>
+                    <p class="text-gray-400 mb-12 text-lg lang-target" data-de="Unser Team ist 7 Tage die Woche für Sie da. Buchen Sie online oder rufen Sie uns an." data-en="Our team is available 7 days a week. You can easily book appointments online or arrange them by phone with our friendly team.">
+                        Our team is available 7 days a week. You can easily book appointments online or arrange them by phone with our friendly team – we look forward to meeting you!
+                    </p>
+                    
+                    <div class="space-y-8 mb-16">
+                        <a href="tel:03026475131" class="text-4xl md:text-6xl font-serif text-gold hover:text-white transition block">030 264 75 131</a>
+                        <a href="https://www.doctolib.de" class="text-xl text-white border-b border-gold inline-block pb-1">Online via Doctolib.de</a>
+                    </div>
+
+                    <h4 class="text-gold text-xs font-black uppercase tracking-[0.4em] mb-8 lang-target" data-de="Öffnungszeiten" data-en="Opening Hours">Opening Hours</h4>
+                    <div class="space-y-4 text-xl md:text-2xl font-serif text-gray-300">
+                        <div class="flex justify-between border-b border-white/5 pb-2"><span class="lang-target" data-de="Montag — Freitag" data-en="Monday — Friday">Monday — Friday</span> <span>8:00 – 20:00</span></div>
+                        <div class="flex justify-between border-b border-white/5 pb-2"><span class="lang-target" data-de="Samstag" data-en="Saturday">Saturday</span> <span>9:00 – 19:00</span></div>
+                        <div class="flex justify-between border-b border-white/5 pb-2 text-gold"><span class="lang-target" data-de="Sonntag" data-en="Sunday">Sunday</span> <span>10:00 – 16:00</span></div>
+                    </div>
+
+                    <div class="mt-16 space-y-4">
+                        <h4 class="text-gold text-xs font-black uppercase tracking-[0.4em] lang-target" data-de="Versicherung" data-en="Health Insurance">Health Insurance</h4>
+                        <p class="text-gray-400 leading-relaxed lang-target" data-de="Wir akzeptieren gesetzlich und privat versicherte Patienten sowie Selbstzahler." data-en="We accept patients from statutory or private health insurance companies as well as self-paying patients.">
+                            We accept patients from statutory or private health insurance companies as well as self-paying patients.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- COL 2: LOCATION & DIRECTIONS -->
+                <div class="reveal flex flex-col">
+                    <!-- LOCKED MAP -->
+                    <div class="h-[400px] md:h-[500px] bg-[#111] relative overflow-hidden map-wrapper flex flex-col items-center justify-center text-center p-8">
+                        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1520960858461-ac6704d74944?q=80&w=1200')] bg-cover bg-center map-blur opacity-40"></div>
+                        <div class="relative z-10 max-w-lg">
+                            <h3 class="text-2xl font-serif mb-4 lang-target" data-de="Standort" data-en="Location">Location</h3>
+                            <p class="text-gray-400 text-sm mb-8 lang-target" data-de="Klicken Sie unten, um die interaktive Karte freizuschalten." data-en="You are currently viewing placeholder content. Unlock to access actual content.">You are currently viewing placeholder content from the standard version. To access the actual content, click the button below.</p>
+                            <button class="bg-gold text-black px-10 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-white transition lang-target" data-de="Karte Freischalten" data-en="Unlock Content">Unlock Content</button>
+                        </div>
+                    </div>
+
+                    <!-- TRANSPORT DETAILS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 flex-grow border-t border-border">
+                        <div class="p-12 border-b md:border-b-0 md:border-r border-border hover:bg-white/5 transition">
+                            <h4 class="text-gold text-xs font-black uppercase tracking-[0.4em] mb-6 lang-target" data-de="Parkplätze" data-en="Parking Nearby">Parking Nearby</h4>
+                            <p class="text-white font-serif text-lg leading-relaxed">
+                                Contipark underground car park<br>
+                                Friedrichstadt-Passagen<br>
+                                Taubenstraße 14, 10117 Berlin
+                            </p>
+                        </div>
+                        <div class="p-12 hover:bg-white/5 transition">
+                            <h4 class="text-gold text-xs font-black uppercase tracking-[0.4em] mb-6 lang-target" data-de="Öffentliche Verkehrsmittel" data-en="Public Transportation">Public Transportation</h4>
+                            <p class="text-gray-400 text-sm leading-loose">
+                                <strong class="text-white">Subway:</strong> Unter den Linden (U5, U6) approx. 3 min<br>
+                                <strong class="text-white">S-Bahn:</strong> S+U Brandenburger Tor (S25) approx. 6 min
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETAILED DIRECTIONS TEXT -->
+            <div class="py-20 border-x border-b border-border px-8 md:px-20 reveal bg-onyx">
+                <p class="text-gold text-xs font-black uppercase tracking-[0.3em] mb-6 lang-target" data-de="Anfahrt" data-en="Directions">Directions</p>
+                <h3 class="text-2xl md:text-3xl font-serif text-white mb-8 uppercase leading-snug lang-target" data-de="Sie finden uns in der 2. Etage der Friedrichstraße 80" data-en="You can find us on the 2nd floor at Friedrichstraße 80">
+                    You can find us on the 2nd floor at Friedrichstraße 80 in 10117 Berlin
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-gray-400 leading-relaxed font-light">
+                    <p class="lang-target" data-de="Unsere Praxis ist leicht mit den öffentlichen Verkehrsmitteln zu erreichen: U6 und U7 bringen Sie zur Station 'Unter den Linden'." data-en="Our practice at Friedrichstraße 80 in Berlin is easily accessible by public transport: the U6 and U7 subway lines will take you to the 'Unter den Linden' station.">
+                        Our practice at Friedrichstraße 80 in Berlin is easily accessible by public transport: the U6 and U7 subway lines will take you to the "Unter den Linden" station, from where our practice is just a one- to two-minute walk.
+                    </p>
+                    <p class="lang-target" data-de="Wenn Sie mit dem Auto anreisen, finden Sie Parkplätze im Contipark Friedrichstadt-Passagen." data-en="If you are arriving by car, you will find parking facilities in the Contipark underground car park Friedrichstadt-Passagen.">
+                        If you are arriving by car, you will find parking facilities in the Contipark underground car park Friedrichstadt-Passagen, Taubenstraße 14, 10117 Berlin.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === 8. MEGA FOOTER === -->
+    <footer class="bg-black pt-40 pb-20 relative overflow-hidden">
+        <!-- FIXED BIG LOGO BACKGROUND -->
+        <h2 class="absolute top-[10%] -right-10 text-[35vw] font-serif font-black text-white/[0.03] leading-none select-none pointer-events-none">F80</h2>
+
+        <div class="max-w-[1900px] mx-auto px-6 md:px-12 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-32">
+                <div>
+                    <h2 class="text-6xl md:text-8xl font-serif tracking-tighter uppercase mb-8 lang-target" data-de="Termin vereinbaren" data-en="Book your appointment">Book your <br><span class="gold-shine">appointment.</span></h2>
+                    
+                    <div class="flex flex-wrap gap-8 mt-12">
+                        <a href="https://wa.me/493026475131" class="text-xl md:text-2xl text-gray-400 hover:text-white transition flex items-center gap-3">
+                            <i class="fab fa-whatsapp text-gold"></i> WhatsApp
+                        </a>
+                        <a href="https://www.instagram.com/f80.berlin/?hl=en" target="_blank" class="text-xl md:text-2xl text-gray-400 hover:text-white transition flex items-center gap-3">
+                            <i class="fab fa-instagram text-gold"></i> Instagram
+                        </a>
+                        <a href="mailto:info@f80.berlin" class="text-xl md:text-2xl text-gray-400 hover:text-white transition flex items-center gap-3 block">
+                            <i class="fas fa-envelope text-gold"></i> E-mail
+                        </a>
+                    </div>
+                </div>
+                <div class="flex flex-col items-start lg:items-end justify-end">
+                    <!-- FIXED FOOTER LOGO -->
+                    <div class="mb-12">
+                        <a href="#" class="text-7xl md:text-9xl font-serif font-black tracking-tighter uppercase text-white hover:text-gold transition">F80<span class="text-gold">.</span></a>
+                    </div>
+                    <a href="https://www.doctolib.de" class="bg-white text-black px-16 py-6 text-xs font-black uppercase tracking-[0.3em] hover:bg-gold transition lang-target" data-de="Jetzt Buchen" data-en="Book Appointment Today">
+                        Book Appointment Today
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-24 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center text-[9px] text-gray-700 uppercase tracking-widest">
+                <span>© 2026 Dr Ziegler MVZ GmbH. All rights reserved.</span>
+                <div class="flex gap-8 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-gold transition">Impressum</a>
+                    <a href="#" class="hover:text-gold transition">Datenschutz</a>
+                    <span>Webdevelopment: product.republic</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- === SCRIPTS === -->
+    <script>
+        // MAGIC INTRO
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.body.classList.add('magic-open');
+                setTimeout(() => {
+                    document.getElementById('curtain-left').style.display = 'none';
+                    document.getElementById('curtain-right').style.display = 'none';
+                    document.querySelector('.intro-content').style.display = 'none';
+                }, 1600);
+            }, 2000);
+        });
+
+        // LANGUAGE LOGIC
+        function setLanguage(lang) {
+            const btnDe = document.getElementById('btn-de');
+            const btnEn = document.getElementById('btn-en');
+            
+            if (lang === 'de') {
+                btnDe.classList.remove('opacity-50'); btnDe.classList.add('underline');
+                btnEn.classList.add('opacity-50'); btnEn.classList.remove('underline');
+            } else {
+                btnEn.classList.remove('opacity-50'); btnEn.classList.add('underline');
+                btnDe.classList.add('opacity-50'); btnDe.classList.remove('underline');
+            }
+
+            document.querySelectorAll('.lang-target').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.innerHTML = el.getAttribute(`data-${lang}`);
+                    el.style.opacity = '1';
+                }, 200);
+            });
+        }
+
+        // WHATSAPP
+        function whatsappInquiry(serviceName) {
+            const phone = "4915170238661";
+            const text = `Hello F80 Berlin Team,\n\nI am interested in: *${serviceName}*.\n\nPlease contact me.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // SCROLL REVEAL
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // MOBILE MENU
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('open')) {
+                menu.classList.remove('open');
+            } else {
+                menu.classList.add('open');
+            }
+        }
+    </script>
+</body>
+</html>
